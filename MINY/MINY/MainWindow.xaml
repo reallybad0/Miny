@@ -1,0 +1,17 @@
+﻿<Window x:Class="MINY.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MINY"
+        mc:Ignorable="d"
+        Title="Low Cost Minesweeper" Height="450" Width="460">
+    <Grid>
+        <Label x:Name="contenthere" Margin="10,83,10,0">
+          
+
+        </Label>
+        <Button Content="ZNOVA" HorizontalAlignment="Left" Height="47" Margin="194,19,0,0" VerticalAlignment="Top" Width="78" Click="Button_Click"/>
+
+    </Grid>
+</Window>
