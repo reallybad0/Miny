@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -21,10 +22,14 @@ namespace MINY
     /// </summary>
     public partial class MainWindow : Window
     {
+        int clickcounter;
+
         public MainWindow()
         {
             InitializeComponent();
+
             //První kliknutí nikdy není bomba
+
             CreateGrid();
             //GenerateGameField();
 
@@ -32,22 +37,7 @@ namespace MINY
         }
 
 
-        public void GenerateGameField()
-        {
-            int pocetbomb = 5;
 
-            Random r = new Random();
-            string[,] gf = new string[10,10];
-            for (int i =0; i< pocetbomb; i++)
-            {
-                int randX = r.Next(0, 9);
-                int randY = r.Next(0, 9);
-                
-                gf[randX,randY] = "B";
-            }
-
-
-        }
         //Create clickable grid
         public void CreateGrid()
         {
@@ -163,15 +153,26 @@ namespace MINY
         private void ClickHandler(object sender, EventArgs e)
         {
             Button srcbtn = sender as Button;
-            Random r = new Random();
-            srcbtn.FontWeight = FontWeights.Bold;
+            int X = Grid.GetRow((Button)sender);
+            int Y = Grid.GetColumn((Button)sender);
+                       
             srcbtn.FontSize = 14;
             Debug.WriteLine(srcbtn.Content);
 
-        }
+            //get global gf, set content as gf[x,y] :(
 
+            clickcounter++;
+            moves.Content = clickcounter;
+        }
+        public string ReturnValue(string[,] gf, int x, int y)
+        {
+            string fieldvalue = gf[x, y];
+            return fieldvalue;
+        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            clickcounter = 0;
+            moves.Content = clickcounter;
             CreateGrid();
         }
     }

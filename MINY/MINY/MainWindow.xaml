@@ -12,6 +12,7 @@
 
         </Label>
         <Button Content="ZNOVA" HorizontalAlignment="Left" Height="47" Margin="194,19,0,0" VerticalAlignment="Top" Width="78" Click="Button_Click"/>
+        <Label x:Name="moves" HorizontalAlignment="Left" Height="47" Margin="15,19,0,0" VerticalAlignment="Top" Width="96"/>
 
     </Grid>
 </Window>
