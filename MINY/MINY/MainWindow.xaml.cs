@@ -23,7 +23,7 @@ namespace MINY
     public partial class MainWindow : Window
     {
         int clickcounter;
-
+        string[,] gf = new string[10, 10];
         public MainWindow()
         {
             InitializeComponent();
@@ -71,7 +71,7 @@ namespace MINY
             int fieldsize = 10;
 
             Random r = new Random();
-            string[,] gf = new string[10, 10];
+            
             for (int i = 0; i < bombcount; i++)
             {
                 int randX = r.Next(0, 9);
@@ -135,7 +135,7 @@ namespace MINY
                     }
 
 
-                    btn.Content = gf[c, v];
+                   // btn.Content = gf[c, v];
                     
 
                     Grid.SetRow(btn, c);
@@ -155,11 +155,14 @@ namespace MINY
             Button srcbtn = sender as Button;
             int X = Grid.GetRow((Button)sender);
             int Y = Grid.GetColumn((Button)sender);
-                       
-            srcbtn.FontSize = 14;
-            Debug.WriteLine(srcbtn.Content);
 
-            //get global gf, set content as gf[x,y] :(
+            string clickedInArray = gf[X, Y];
+            srcbtn.Content = clickedInArray;
+                                        
+
+            //srcbtn.FontSize = 14;
+
+
 
             clickcounter++;
             moves.Content = clickcounter;
