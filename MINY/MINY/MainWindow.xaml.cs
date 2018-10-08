@@ -24,27 +24,27 @@ namespace MINY
     {
         int clickcounter;
         string[,] gf = new string[10, 10];
+        Grid DynamicGrid = new Grid();
+        int fieldsize = 10;
         public MainWindow()
         {
             InitializeComponent();
 
             //První kliknutí nikdy není bomba
 
-            CreateGrid();
+            CreateGridTable();
+            FillGrid();
             //GenerateGameField();
 
 
         }
 
-
-
-        //Create clickable grid
-        public void CreateGrid()
+        public void CreateGridTable()
         {
             int columncount = 10;
             int rowcount = 10;
 
-            Grid DynamicGrid = new Grid();
+
             DynamicGrid.Width = 400;
             DynamicGrid.HorizontalAlignment = HorizontalAlignment.Center;
             DynamicGrid.VerticalAlignment = VerticalAlignment.Top;
@@ -65,13 +65,17 @@ namespace MINY
                 gridRowx.Height = new GridLength(20);
                 DynamicGrid.RowDefinitions.Add(gridRowx);
             }
+        }
 
-  
+        //Create clickable grid
+        public void FillGrid()
+        {
+
             int bombcount = 10;
             int fieldsize = 10;
 
             Random r = new Random();
-            
+
             for (int i = 0; i < bombcount; i++)
             {
                 int randX = r.Next(0, 9);
@@ -101,11 +105,11 @@ namespace MINY
                         if (c + 1 < fieldsize - 1 && v < fieldsize - 1 && c + 1 >= 0 && v >= 0) { if (gf[c + 1, v] == "B") { bombsaround++; } }
                         if (c + 1 < fieldsize - 1 && v + 1 < fieldsize - 1 && c + 1 >= 0 && v + 1 >= 0) { if (gf[c + 1, v + 1] == "B") { bombsaround++; } }
                         gf[c, v] = bombsaround.ToString();
-                    }                
+                    }
 
                 }
             }
-      
+
 
             for (int c = 0; c < 10; c++)
             {
@@ -115,13 +119,13 @@ namespace MINY
                     btn.FontSize = 10;
                     btn.Click += new RoutedEventHandler(ClickHandler);
                     btn.FontWeight = FontWeights.Bold;
-                    if(gf[c,v] == "1")
+                    if (gf[c, v] == "1")
                     {
                         btn.Foreground = Brushes.Blue;
-                    }else if(gf[c, v] == "2")
+                    } else if (gf[c, v] == "2")
                     {
                         btn.Foreground = Brushes.Green;
-                    }else if(gf[c,v] == "3")
+                    } else if (gf[c, v] == "3")
                     {
                         btn.Foreground = Brushes.Red;
                     }
@@ -135,11 +139,11 @@ namespace MINY
                     }
 
 
-                   // btn.Content = gf[c, v];
-                    
+                    // btn.Content = gf[c, v];
+
 
                     Grid.SetRow(btn, c);
-                    Grid.SetColumn(btn, v);                  
+                    Grid.SetColumn(btn, v);
 
                     DynamicGrid.Children.Add(btn);
                 }
@@ -158,25 +162,40 @@ namespace MINY
 
             string clickedInArray = gf[X, Y];
             srcbtn.Content = clickedInArray;
-                                        
 
-            //srcbtn.FontSize = 14;
+            if (clickedInArray == "B")
+            {
+                //game over
+                MessageBox.Show("Prohráli jste! °n° ");
+                clickcounter = -1;
+                DynamicGrid.Children.Clear();
+                FillGrid();
+            }
+            /*
+            if (clickedInArray == "0")
+            {
 
-
-
+                for (int c = 0; c < fieldsize; c++)
+                {
+                    for (int v = 0; v < fieldsize; v++)
+                    {
+                        if(gf[c,v] == "0")
+                        {
+                            
+                        }
+                    }
+                }
+            }*/
             clickcounter++;
             moves.Content = clickcounter;
+
         }
-        public string ReturnValue(string[,] gf, int x, int y)
-        {
-            string fieldvalue = gf[x, y];
-            return fieldvalue;
-        }
+        //New Game
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            clickcounter = 0;
-            moves.Content = clickcounter;
-            CreateGrid();
+        clickcounter = 0;
+        moves.Content = clickcounter;
+        FillGrid();
         }
     }
 }
