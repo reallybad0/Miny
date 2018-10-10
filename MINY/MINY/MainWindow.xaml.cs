@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -23,32 +24,47 @@ namespace MINY
     public partial class MainWindow : Window
     {
         int clickcounter;
-        string[,] gf = new string[10, 10];
+        
         Grid DynamicGrid = new Grid();
-        int fieldsize = 10;
+        int fieldsize = 15;
+        string[,] gf = new string[50,50];
+
         public MainWindow()
         {
             InitializeComponent();
 
             //První kliknutí nikdy není bomba
 
-            CreateGridTable();
-            FillGrid();
+            CreateGridTable(fieldsize);
+            FillGrid(fieldsize);
+            FillCB();
             //GenerateGameField();
 
-
         }
-
-        public void CreateGridTable()
+        //Fill Combobox
+        public void FillCB()
         {
-            int columncount = 10;
-            int rowcount = 10;
+            int starter = 5;
+            for(int i = 0; i < 8; i++)
+            {
+                fieldsizecb.Items.Add(starter);
+                starter = starter + 5;
+            }
+            fieldsizecb.SelectedIndex = 0;
+        }
+        
+        //Create grid table
+        public void CreateGridTable(int fieldsize)
+        {
+                        
+            DynamicGrid = new Grid();
 
+            int columncount = fieldsize;
+            int rowcount = fieldsize;
 
             DynamicGrid.Width = 400;
             DynamicGrid.HorizontalAlignment = HorizontalAlignment.Center;
             DynamicGrid.VerticalAlignment = VerticalAlignment.Top;
-            //DynamicGrid.ShowGridLines = true;
             DynamicGrid.Background = new SolidColorBrush(Colors.LightGray);
 
             //Sloupce
@@ -57,8 +73,8 @@ namespace MINY
                 ColumnDefinition gridColx = new ColumnDefinition();
                 DynamicGrid.ColumnDefinitions.Add(gridColx);
             }
-            //Řádky
 
+            //Řádky
             for (int y = 0; y < rowcount; y++)
             {
                 RowDefinition gridRowx = new RowDefinition();
@@ -68,25 +84,32 @@ namespace MINY
         }
 
         //Create clickable grid
-        public void FillGrid()
+        public void FillGrid(int fs)
         {
+            int bombcount = fs;
+            int fieldsize = fs;
+            // ! ! ! !  !
+            for (int c = 0; c < fieldsize; c++)
+            {
+                for (int v = 0; v < fieldsize; v++)
+                {
+                    gf[c, v] = "0";
+                }
+            }
 
-            int bombcount = 10;
-            int fieldsize = 10;
 
             Random r = new Random();
-
+            //Place bombs
             for (int i = 0; i < bombcount; i++)
             {
-                int randX = r.Next(0, 9);
-                int randY = r.Next(0, 9);
+                int randX = r.Next(0, fieldsize-1);
+                int randY = r.Next(0, fieldsize-1);
 
                 gf[randX, randY] = "B";
             }
 
             for (int c = 0; c < fieldsize; c++)
             {
-
                 for (int v = 0; v < fieldsize; v++)
                 {
                     int bombsaround = 0;
@@ -111,9 +134,9 @@ namespace MINY
             }
 
 
-            for (int c = 0; c < 10; c++)
+            for (int c = 0; c < fieldsize; c++)
             {
-                for (int v = 0; v < 10; v++)
+                for (int v = 0; v < fieldsize; v++)
                 {
                     Button btn = new Button();
                     btn.FontSize = 10;
@@ -137,11 +160,7 @@ namespace MINY
                     {
                         btn.Foreground = Brushes.DarkBlue;
                     }
-
-
                     // btn.Content = gf[c, v];
-
-
                     Grid.SetRow(btn, c);
                     Grid.SetColumn(btn, v);
 
@@ -150,10 +169,11 @@ namespace MINY
 
             }
 
-            //add all to label
+            //Add all to label
             contenthere.Content = DynamicGrid;
 
         }
+        //Button clicked
         private void ClickHandler(object sender, EventArgs e)
         {
             Button srcbtn = sender as Button;
@@ -169,33 +189,70 @@ namespace MINY
                 MessageBox.Show("Prohráli jste! °n° ");
                 clickcounter = -1;
                 DynamicGrid.Children.Clear();
-                FillGrid();
+                FillGrid(fieldsize);
             }
-            /*
             if (clickedInArray == "0")
             {
-
                 for (int c = 0; c < fieldsize; c++)
                 {
                     for (int v = 0; v < fieldsize; v++)
                     {
                         if(gf[c,v] == "0")
                         {
-                            
+                            //get button from grid other than clicked
+                            var rr = (Button)DynamicGrid.Children.Cast<UIElement>().First(m => Grid.GetRow(m) == c && Grid.GetColumn(m) == v);
+                            rr.Content = "0";
                         }
                     }
                 }
-            }*/
+            }
+
             clickcounter++;
             moves.Content = clickcounter;
 
+
+            //add CHECK button, checks if button is clicked
         }
-        //New Game
+        
+        //New game, same field size
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-        clickcounter = 0;
-        moves.Content = clickcounter;
-        FillGrid();
+            clickcounter = 0;
+            moves.Content = clickcounter;
+            FillGrid(fieldsize);
+        }
+        //New game, different field size
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            clickcounter = 0;
+            fieldsize = (Int32)fieldsizecb.SelectedItem;
+            CreateGridTable(fieldsize);
+            FillGrid(fieldsize);
+
+        }
+        //checks if bomb buttons were clicked
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            bool somethingclicked=false;
+            for (int c = 0; c < fieldsize; c++)
+            {
+                for (int v = 0; v < fieldsize; v++)
+                {
+                    if (gf[c, v] == "B")
+                    {
+                        //get button from grid other than clicked
+                        var rr = (Button)DynamicGrid.Children.Cast<UIElement>().First(m => Grid.GetRow(m) == c && Grid.GetColumn(m) == v);
+                        //CHECK IF CLICKED
+                        //nový pole s tím jeslti se na něj kliklo?
+                        
+                    }
+                }
+            }
+
+            if (somethingclicked == false)
+            {
+                MessageBox.Show("YOU WIN");
+            }
         }
     }
 }
