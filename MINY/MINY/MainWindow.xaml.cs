@@ -26,13 +26,13 @@ namespace MINY
         int clickcounter;
         
         Grid DynamicGrid = new Grid();
-        int fieldsize = 15;
+        int fieldsize;
         string[,] gf = new string[50,50];
 
         public MainWindow()
         {
             InitializeComponent();
-
+            fieldsize = 15;
             //První kliknutí nikdy není bomba
 
             CreateGridTable(fieldsize);
@@ -100,7 +100,7 @@ namespace MINY
 
             Random r = new Random();
             //Place bombs
-            for (int i = 0; i < bombcount; i++)
+            for (int i = 0; i < bombcount+1; i++)
             {
                 int randX = r.Next(0, fieldsize-1);
                 int randY = r.Next(0, fieldsize-1);
@@ -182,11 +182,27 @@ namespace MINY
 
             string clickedInArray = gf[X, Y];
             srcbtn.Content = clickedInArray;
-
+            srcbtn.IsEnabled = false;
             if (clickedInArray == "B")
             {
                 //game over
+                //show whole field 
+                for (int c = 0; c < fieldsize; c++)
+                {
+                    for (int v = 0; v < fieldsize; v++)
+                    {
+                        if(gf[c,v] == "B")
+                        {
+                            //get button from grid other than clicked
+                            var rr = (Button)DynamicGrid.Children.Cast<UIElement>().First(m => Grid.GetRow(m) == c && Grid.GetColumn(m) == v);
+                            rr.Content = "B";
+                            rr.Foreground = Brushes.Red;
+                        }
+                    }
+                }
+                
                 MessageBox.Show("Prohráli jste! °n° ");
+
                 clickcounter = -1;
                 DynamicGrid.Children.Clear();
                 FillGrid(fieldsize);
@@ -202,16 +218,25 @@ namespace MINY
                             //get button from grid other than clicked
                             var rr = (Button)DynamicGrid.Children.Cast<UIElement>().First(m => Grid.GetRow(m) == c && Grid.GetColumn(m) == v);
                             rr.Content = "0";
+                            rr.IsEnabled = false;
                         }
                     }
                 }
             }
 
-            clickcounter++;
-            moves.Content = clickcounter;
-
-
-            //add CHECK button, checks if button is clicked
+            //IF clickedcounter = (fieldsize*fieldsize)-fieldsize = you win!
+            int cnttowin = (fieldsize * fieldsize) - fieldsize;
+            if(clickcounter == cnttowin)
+            {
+                MessageBox.Show("YOU WIN!");
+            }
+            else
+            {
+                clickcounter++;
+                moves.Content = clickcounter;
+            }
+           
+           
         }
         
         //New game, same field size
