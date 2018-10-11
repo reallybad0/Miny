@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MINY"
         mc:Ignorable="d"
-        Title="Low Cost Minesweeper" Height="450" Width="460">
+        Title="Low Cost Minesweeper" Height="450" Width="460" Loaded="Window_Loaded">
     <Grid>
         <Grid x:Name="topmenugrid" Margin="10,10,10,341">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -24,7 +25,7 @@
             <ComboBox x:Name="fieldsizecb" FontSize="30" Width="78" Grid.Column="2" Grid.Row="0"/>
             <Button Content="»" FontSize="30" Width="52"  Grid.Column="3" Grid.Row="0" Height="47" VerticalAlignment="Top" Click="Button_Click_1"/>
             <Button Content="Check" FontSize="15" Width="52"  Grid.Column="4" Grid.Row="0" Height="47" VerticalAlignment="Top" Click="Button_Click_2" />
-
+            <Label x:Name="timer" HorizontalAlignment="Left" FontSize="30" Grid.Column="5" Grid.Row="0"/>
 
         </Grid>
         <Label x:Name="contenthere" Margin="10,83,10,0">
