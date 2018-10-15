@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace MINY
         int fieldsize;
         string[,] gf = new string[50, 50];
         int flagcounter;
-
+        bool gamewon = false;
         
         public MainWindow()
         {
@@ -193,6 +194,7 @@ namespace MINY
                         else
                         {
                             taggedall = false;
+                            
                         }
 
 
@@ -206,6 +208,8 @@ namespace MINY
             }else if(taggedall == true)
             {
                 MessageBox.Show("YOU WIN ☺ YOUR TIME WAS " + increment);
+                gamewon = true;
+                Save();
                 int finaltime = increment;
             }
         }
@@ -303,20 +307,66 @@ namespace MINY
             }
         }
 
+        //Timers
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             DispatcherTimer dt = new DispatcherTimer();
             dt.Interval = TimeSpan.FromSeconds(1);
             dt.Tick+= dtTicker;
-            dt.Start();
-            
+            dt.Start();           
 
         }
         private void dtTicker(object sender, EventArgs e)
         {
             //if game won, increment stop
-            increment++;
-            timer.Content = increment.ToString();
+            if (gamewon)
+            {
+                timer.Content = increment.ToString();
+            }
+            else
+            {
+                increment++;
+                timer.Content = increment.ToString();
+            }
+            
+        }
+
+        public string GetDBFilePath()
+        {
+            string fileName = "scoreboard.txt";
+            string dirpath = @Directory.GetCurrentDirectory();
+            var gparent = Directory.GetParent(Directory.GetParent(dirpath).ToString());
+            string imgfolder = System.IO.Path.Combine(gparent.ToString(), @"Userdata\");
+            string FullFilePath = System.IO.Path.Combine(imgfolder, @fileName);
+            return FullFilePath;
+
+        }
+
+        public void Save()
+        {
+            string path = GetDBFilePath();
+
+            try
+            {
+                using (var tw = new StreamWriter(path, true))
+                {
+                    tw.WriteLine("Čas: " + increment + " Velikost pole " + fieldsize);
+                    tw.Close();
+                    MessageBox.Show("Success");
+                }               
+            }
+            catch
+            {
+                File.Create(path).Dispose();
+                using (TextWriter tw = new StreamWriter(path))
+                {
+                    tw.WriteLine("Čas: " + increment + " Velikost pole " + fieldsize);
+                    tw.Close();
+                    MessageBox.Show("Success");
+                }
+
+            }
+
         }
         //get values of element in the field
         //var rr = (Button)DynamicGrid.Children.Cast<UIElement>().First(m => Grid.GetRow(m) == c && Grid.GetColumn(m) == v);
